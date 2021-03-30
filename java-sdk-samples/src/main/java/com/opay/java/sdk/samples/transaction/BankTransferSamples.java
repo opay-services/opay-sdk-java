@@ -1,20 +1,22 @@
 package com.opay.java.sdk.samples.transaction;
 
-import com.alibaba.fastjson.JSONObject;
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
-import com.opay.sdk.enums.TransactionStatus;
+import com.opay.sdk.enums.TransactionStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.BankTransferStatus;
 import com.opay.sdk.model.request.TransactionBankTransferRequest;
 import com.opay.sdk.model.request.TransactionBankTransferStatusRequest;
 import com.opay.sdk.model.response.TransactionBankTransferResponse;
 import com.opay.sdk.model.response.TransactionBankTransferStatusResponse;
+import org.apache.http.util.Asserts;
 
 /**
- * Sample of transfer to Bank Account
+ * This sample is a bank transfer transaction
+ * Step 1: Initialize the transaction
+ * Step 2: After the customer transfer is completed, use reference to query the final status of the transaction
  */
 public class BankTransferSamples {
 
@@ -23,35 +25,26 @@ public class BankTransferSamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
+        BankTransferSamples samples = new BankTransferSamples();
 
-
-        TransactionBankTransferResponse response = init();
-        if (response == null) {
+        TransactionBankTransferResponse response = samples.init();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (!response.success()) {
             System.out.println("Failed to initialize transaction");
             return;
         }
-        System.out.println("Initialize transaction response body:" + response);
-        if (!response.success()) {
-            System.out.println("Failed to initialize transaction:" + response.getMessage());
-            return;
-        }
         String reference = response.getData().getReference();
-        System.out.println("Successfully initialized the transaction");
         while (true) {
-            TransactionBankTransferStatusResponse statusResponse = queryStatus(reference);
-            if (statusResponse == null) {
+            TransactionBankTransferStatusResponse statusResponse = samples.queryStatus(reference);
+            Asserts.notNull(statusResponse, "Query status response");
+            System.out.println(statusResponse);
+            if (!statusResponse.success()) {
                 System.out.println("Failed to query transaction status");
                 return;
             }
-            System.out.println("Query status response body:" + statusResponse);
-
-            if (!statusResponse.success()) {
-                System.out.println("Failed to query transaction status:" + statusResponse.getMessage());
-                return;
-            }
-
             BankTransferStatus data = statusResponse.getData();
-            if (TransactionStatus.PENDING.getValue().equals(data.getStatus()) || TransactionStatus.INITIAL.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.PENDING.getValue().equals(data.getStatus()) || TransactionStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction processing");
                 try {
                     Thread.sleep(5000);
@@ -59,14 +52,14 @@ public class BankTransferSamples {
                     e.printStackTrace();
                 }
                 continue;
-            }
-            if (TransactionStatus.SUCCESS.getValue().equals(data.getStatus())) {
-                System.out.println("Successful transaction");
+            } else if (TransactionStatusEnum.SUCCESS.getValue().equals(data.getStatus())) {
+                System.out.println("Transaction successful");
                 break;
-            }
-
-            if (TransactionStatus.FAILED.getValue().equals(data.getStatus())) {
+            } else if (TransactionStatusEnum.FAILED.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction failed");
+                break;
+            } else {
+                System.out.println("Unknown status");
                 break;
             }
         }
@@ -78,7 +71,7 @@ public class BankTransferSamples {
      *
      * @return
      */
-    public static TransactionBankTransferResponse init() {
+    public TransactionBankTransferResponse init() {
         TransactionBankTransferRequest request = new TransactionBankTransferRequest();
         request.setReference(System.currentTimeMillis() + "");
         request.setAmount("100");
@@ -88,7 +81,7 @@ public class BankTransferSamples {
         request.setUserRequestIp("123.123.123.123");
         request.setCallbackUrl("http://www.baidu.com");
         request.setExpireAt("20");
-        System.out.println(JSONObject.toJSONString(request));
+        System.out.println(request);
         TransactionBankTransferResponse response = null;
         try {
             response = client.createBankTransferTransaction(request);
@@ -103,9 +96,10 @@ public class BankTransferSamples {
      *
      * @return
      */
-    public static TransactionBankTransferStatusResponse queryStatus(String reference) {
+    public TransactionBankTransferStatusResponse queryStatus(String reference) {
         TransactionBankTransferStatusRequest request = new TransactionBankTransferStatusRequest();
         request.setReference(reference);
+        System.out.println(request);
         TransactionBankTransferStatusResponse response = null;
         try {
             response = client.querybankTransferTransactionStatus(request);

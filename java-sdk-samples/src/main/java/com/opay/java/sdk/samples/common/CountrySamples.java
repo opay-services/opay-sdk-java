@@ -6,7 +6,11 @@ import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.response.CountryResponse;
+import org.apache.http.util.Asserts;
 
+/**
+ * This sample is to query the currently supported countries
+ */
 public class CountrySamples {
 
 
@@ -15,17 +19,25 @@ public class CountrySamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
+        CountrySamples samples = new CountrySamples();
+        CountryResponse response = samples.countries();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (response.success()) {
+            System.out.println("Query Successful");
+        } else {
+            System.out.println("Query Failed");
+        }
+    }
 
+    public CountryResponse countries() {
         CountryResponse response = null;
         try {
             response = client.countries();
+
         } catch (OPayException e) {
             e.printStackTrace();
         }
-        if (response.success()) {
-            System.out.println(response);
-        } else {
-            System.out.println(String.format("code:%s, message:%s", response.getCode(), response.getMessage()));
-        }
+        return response;
     }
 }

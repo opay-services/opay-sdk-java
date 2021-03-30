@@ -3,7 +3,7 @@ package com.opay.sdk.enums;
 import lombok.Getter;
 
 @Getter
-public enum TransactionStatus {
+public enum TransactionStatusEnum {
     INITIAL("INITIAL"),
     PENDING("PENDING"),
     INPUT_PIN("INPUT-PIN"),
@@ -17,7 +17,7 @@ public enum TransactionStatus {
 
     private String value;
 
-    TransactionStatus(String value) {
+    TransactionStatusEnum(String value) {
         this.value = value;
     }
 }

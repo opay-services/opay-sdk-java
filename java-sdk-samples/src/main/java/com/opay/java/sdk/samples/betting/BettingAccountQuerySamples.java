@@ -5,12 +5,12 @@ import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
 import com.opay.sdk.exception.OPayException;
-import com.opay.sdk.model.BettingAccount;
 import com.opay.sdk.model.request.BettingAccountRequest;
 import com.opay.sdk.model.response.BettingAccountResponse;
+import org.apache.http.util.Asserts;
 
 /**
- * This sample is to verify the customerId of a specific provider
+ * This sample is for querying betting account information
  */
 public class BettingAccountQuerySamples {
 
@@ -20,23 +20,27 @@ public class BettingAccountQuerySamples {
 
     public static void main(String[] args) {
         BettingAccountQuerySamples samples = new BettingAccountQuerySamples();
-        BettingAccount data = samples.validate();
-        System.out.println(data);
+        BettingAccountResponse response = samples.query();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (response.success()) {
+            System.out.println("Query Successful");
+        } else {
+            System.out.println("Query Failed");
+        }
     }
 
-    public BettingAccount validate() {
+    public BettingAccountResponse query() {
         BettingAccountRequest request = new BettingAccountRequest();
         request.setProvider("CLOUDBET");
-        request.setCustomerId("1234344324324");
+        request.setCustomerId("123456789");
+        System.out.println(request);
+        BettingAccountResponse response = null;
         try {
-            BettingAccountResponse response = client.validateBettingCustomerId(request);
-            if (!response.success()) {
-                throw new OPayException(response.getMessage());
-            }
-            return response.getData();
+            response = client.validateBettingCustomerId(request);
         } catch (OPayException e) {
             e.printStackTrace();
         }
-        return null;
+        return response;
     }
 }

@@ -7,7 +7,11 @@ import com.opay.sdk.enums.Environment;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.request.BankRequest;
 import com.opay.sdk.model.response.BankResponse;
+import org.apache.http.util.Asserts;
 
+/**
+ * This sample queries the banks supported by the transaction
+ */
 public class BankSamples {
 
 
@@ -16,18 +20,28 @@ public class BankSamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
+        BankSamples samples = new BankSamples();
+        BankResponse response = samples.banks();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (response.success()) {
+            System.out.println("Query Successful");
+        } else {
+            System.out.println("Query Failed");
+        }
+
+    }
+
+    public BankResponse banks() {
         BankRequest request = new BankRequest();
         request.setCountryCode("NG");
+        System.out.println(request);
         BankResponse response = null;
         try {
             response = client.banks(request);
         } catch (OPayException e) {
             e.printStackTrace();
         }
-        if(response.success()){
-            System.out.println(response);
-        }else{
-            System.out.println(String.format("code:%s, message:%s", response.getCode(), response.getMessage()));
-        }
+        return response;
     }
 }

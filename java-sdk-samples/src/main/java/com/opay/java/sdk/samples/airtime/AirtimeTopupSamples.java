@@ -4,24 +4,25 @@ import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
-import com.opay.sdk.enums.TopupStatus;
+import com.opay.sdk.enums.TopupStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.AirtimeTopup;
 import com.opay.sdk.model.Bulk;
 import com.opay.sdk.model.BulkStatus;
-import com.opay.sdk.model.request.AirtimeTopupStatusRequest;
 import com.opay.sdk.model.request.AirtimeTopupRequest;
+import com.opay.sdk.model.request.AirtimeTopupStatusRequest;
 import com.opay.sdk.model.response.AirtimeTopupResponse;
 import com.opay.sdk.model.response.AirtimeTopupStatusResponse;
+import org.apache.http.util.Asserts;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This sample demonstrates the complete call charge recharge process.
- * The first step is to initiate a recharge transaction,
- * The second step is to query the transaction status.
+ * This sample is a airtime account recharge.
+ * step 1: initiate a recharge transaction.
+ * step 2: check the status to confirm the final result.
  */
 public class AirtimeTopupSamples {
 
@@ -32,18 +33,13 @@ public class AirtimeTopupSamples {
     public static void main(String[] args) {
         AirtimeTopupSamples samples = new AirtimeTopupSamples();
         AirtimeTopupResponse response = samples.init();
-        if (response == null) {
-            System.out.println("Failed to initialize transaction");
-            return;
-        }
+        Asserts.notNull(response, "response");
         System.out.println("Initialize transaction response:" + response);
         if (!response.success()) {
             System.out.println("Failed to initialize transaction:" + response.getMessage());
             return;
         }
         System.out.println("Successful to initialize transaction");
-
-
         List<String> references = response.getData().stream()
                 .map(AirtimeTopup::getReference)
                 .collect(Collectors.toList());
@@ -52,23 +48,17 @@ public class AirtimeTopupSamples {
         for (String reference : references) {
             while (true) {
                 AirtimeTopupStatusResponse statusResponse = samples.queryStatus(reference);
-                System.out.println(response);
-
+                Asserts.notNull(response, "Query status response");
                 System.out.println(statusResponse);
-                if (statusResponse == null) {
-                    System.out.println("Failed to query transaction status");
-                    break;
-                }
                 if (!statusResponse.success()) {
                     System.out.println(response.getMessage());
                     break;
                 }
                 AirtimeTopup data = statusResponse.getData().get(0);
-                if (TopupStatus.SUCCESS.getValue().equals(data.getStatus())) {
+                if (TopupStatusEnum.SUCCESS.getValue().equals(data.getStatus())) {
                     System.out.println("Successful transaction");
                     break;
-                }
-                if (TopupStatus.PENDING.getValue().equals(data.getStatus()) || TopupStatus.INITIAL.getValue().equals(data.getStatus())) {
+                } else if (TopupStatusEnum.PENDING.getValue().equals(data.getStatus()) || TopupStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                     System.out.println("Transaction processing");
                     try {
                         Thread.sleep(5000);
@@ -76,9 +66,11 @@ public class AirtimeTopupSamples {
                         e.printStackTrace();
                     }
                     continue;
-                }
-                if (TopupStatus.FAIL.getValue().equals(data.getStatus())) {
+                } else if (TopupStatusEnum.FAIL.getValue().equals(data.getStatus())) {
                     System.out.println("Transaction Failed:" + data.getErrorMsg());
+                    break;
+                } else {
+                    System.out.println("Unknown status");
                     break;
                 }
             }

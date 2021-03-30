@@ -7,7 +7,12 @@ import com.opay.sdk.enums.Environment;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.request.CashierCloseRequest;
 import com.opay.sdk.model.response.CashierCloseResponse;
+import org.apache.http.util.Asserts;
 
+
+/**
+ * This is a sample of closing a transaction
+ */
 public class CashierCloseSamples {
 
 
@@ -16,18 +21,28 @@ public class CashierCloseSamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
+        CashierCloseSamples samples = new CashierCloseSamples();
+        CashierCloseResponse response = samples.close();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (response.success()) {
+            System.out.println("Close Successful");
+        } else {
+            System.out.println("Close Failed:" + response.getMessage());
+        }
+    }
+
+
+    public CashierCloseResponse close() {
         CashierCloseRequest request = new CashierCloseRequest();
         request.setReference("1616573150477");
+        System.out.println(request);
         CashierCloseResponse response = null;
         try {
             response = client.cashierClose(request);
         } catch (OPayException e) {
             e.printStackTrace();
         }
-        if(response.success()){
-            System.out.println(response);
-        }else{
-            System.out.println(String.format("code:%s, message:%s", response.getCode(), response.getMessage()));
-        }
+        return response;
     }
 }

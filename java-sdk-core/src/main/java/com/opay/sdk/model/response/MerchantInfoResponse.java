@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Data
+@Data()
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class MerchantInfoResponse extends Response {

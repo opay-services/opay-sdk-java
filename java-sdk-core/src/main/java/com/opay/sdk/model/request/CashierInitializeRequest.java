@@ -1,7 +1,7 @@
 package com.opay.sdk.model.request;
 
-import com.opay.sdk.enums.CashierPayMethod;
-import com.opay.sdk.enums.CashierPayType;
+import com.opay.sdk.enums.CashierPayMethodEnum;
+import com.opay.sdk.enums.CashierPayTypeEnum;
 import lombok.Data;
 
 import java.util.List;
@@ -19,8 +19,8 @@ public class CashierInitializeRequest {
     private String returnUrl;
     private String productName;
     private String productDesc;
-    private List<CashierPayMethod> payMethods;
-    private List<CashierPayType> payTypes;
+    private List<CashierPayMethodEnum> payMethods;
+    private List<CashierPayTypeEnum> payTypes;
     private String expireAt;
     private String serviceId;
     private String merchantUserId;

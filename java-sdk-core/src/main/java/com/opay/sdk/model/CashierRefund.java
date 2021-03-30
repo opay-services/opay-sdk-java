@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class CashierRefund {
     private String orderNo;
+    private String reference;
     private String orderStatus;
 }

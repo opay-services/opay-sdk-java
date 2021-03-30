@@ -1,20 +1,22 @@
 package com.opay.java.sdk.samples.transaction;
 
-import com.alibaba.fastjson.JSONObject;
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
-import com.opay.sdk.enums.TransactionStatus;
+import com.opay.sdk.enums.TransactionStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.TransactionUssdStatus;
 import com.opay.sdk.model.request.TransactionStatusRequest;
 import com.opay.sdk.model.request.TransactionUssdRequest;
 import com.opay.sdk.model.response.TransactionUssdResponse;
 import com.opay.sdk.model.response.TransactionUssdStatusResponse;
+import org.apache.http.util.Asserts;
 
 /**
- * Sample of transfer to Bank Account
+ * This sample is a USSD transaction
+ * Step 1: Initialize the transaction
+ * Step 2: After the customer dials, call the reference to query the final status of the transaction
  */
 public class UssdSamples {
 
@@ -26,32 +28,23 @@ public class UssdSamples {
         UssdSamples samples = new UssdSamples();
 
         TransactionUssdResponse response = samples.init();
-        if (response == null) {
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (!response.success()) {
             System.out.println("Failed to initialize transaction");
             return;
         }
-        System.out.println("Initialize transaction response body:" + response);
-        if (!response.success()) {
-            System.out.println("Failed to initialize transaction:" + response.getMessage());
-            return;
-        }
         String reference = response.getData().getReference();
-        System.out.println("Successfully initialized the transaction");
         while (true) {
             TransactionUssdStatusResponse statusResponse = samples.queryStatus(reference);
-            if (statusResponse == null) {
+            Asserts.notNull(statusResponse, "Query status response");
+            System.out.println(statusResponse);
+            if (!statusResponse.success()) {
                 System.out.println("Failed to query transaction status");
                 return;
             }
-            System.out.println("Query status response body:" + statusResponse);
-
-            if (!statusResponse.success()) {
-                System.out.println("Failed to query transaction status:" + statusResponse.getMessage());
-                return;
-            }
-
             TransactionUssdStatus data = statusResponse.getData();
-            if (TransactionStatus.PENDING.getValue().equals(data.getStatus()) || TransactionStatus.INITIAL.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.PENDING.getValue().equals(data.getStatus()) || TransactionStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction processing");
                 try {
                     Thread.sleep(5000);
@@ -59,17 +52,14 @@ public class UssdSamples {
                     e.printStackTrace();
                 }
                 continue;
-            }
-            if (TransactionStatus.SUCCESS.getValue().equals(data.getStatus())) {
-                System.out.println("Successful transaction");
+            } else if (TransactionStatusEnum.SUCCESS.getValue().equals(data.getStatus())) {
+                System.out.println("Transaction successful");
                 break;
-            }
-            if (TransactionStatus.CLOSED.getValue().equals(data.getStatus())) {
-                System.out.println("Transaction closed");
-                break;
-            }
-            if (TransactionStatus.FAILED.getValue().equals(data.getStatus())) {
+            } else if (TransactionStatusEnum.FAILED.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction failed");
+                break;
+            } else {
+                System.out.println("Unknown status");
                 break;
             }
         }
@@ -90,9 +80,9 @@ public class UssdSamples {
         request.setUserPhone("+2341231231230");
         request.setUserRequestIp("123.123.123.123");
         request.setCallbackUrl("http://www.baidu.com");
-        request.setExpireAt(20);
+        request.setExpireAt("20");
         request.setBankCode("033");
-        System.out.println(JSONObject.toJSONString(request));
+        System.out.println(request);
         TransactionUssdResponse response = null;
         try {
             response = client.createUssdTransaction(request);
@@ -110,6 +100,7 @@ public class UssdSamples {
     public TransactionUssdStatusResponse queryStatus(String reference) {
         TransactionStatusRequest request = new TransactionStatusRequest();
         request.setReference(reference);
+        System.out.println(request);
         TransactionUssdStatusResponse response = null;
         try {
             response = client.queryUssdTransactionStatus(request);

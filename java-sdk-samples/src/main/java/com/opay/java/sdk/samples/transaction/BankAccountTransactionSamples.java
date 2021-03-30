@@ -1,21 +1,23 @@
 package com.opay.java.sdk.samples.transaction;
 
-import com.alibaba.fastjson.JSONObject;
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
 import com.opay.sdk.enums.PayTypeEnum;
+import com.opay.sdk.enums.TransactionStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.TransactionStatus;
 import com.opay.sdk.model.request.*;
 import com.opay.sdk.model.response.TransactionInputResponse;
 import com.opay.sdk.model.response.TransactionResponse;
 import com.opay.sdk.model.response.TransactionStatusResponse;
-import com.opay.sdk.model.response.TransferStatusResponse;
+import org.apache.http.util.Asserts;
 
 /**
- * Sample of bank account transaction
+ * This sample demonstrates how to create a bank account transaction
+ * Step 1: Initialize the transaction
+ * Step 2: Use reference to query transaction status to determine what to do next
  */
 public class BankAccountTransactionSamples {
 
@@ -24,35 +26,24 @@ public class BankAccountTransactionSamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
-
-
         TransactionResponse response = init();
-        if (response == null) {
-            System.out.println("Failed to initialize transaction");
-            return;
-        }
-        System.out.println("Initialize transaction response body:" + response);
+        Asserts.notNull(response, "response");
+        System.out.println(response);
         if (!response.success()) {
             System.out.println("Failed to initialize transaction:" + response.getMessage());
             return;
         }
-        String reference = response.getData().getReference();
         System.out.println("Successfully initialized the transaction");
+        String reference = response.getData().getReference();
         while (true) {
             TransactionStatusResponse statusResponse = queryStatus(reference);
-            if (statusResponse == null) {
-                System.out.println("Failed to query transaction status");
-                return;
-            }
-            System.out.println("Query status response body:" + statusResponse);
+            Asserts.notNull(response, "Query status response");
+            System.out.println("Query status response:" + statusResponse);
 
-            if (!statusResponse.success()) {
-                System.out.println("Failed to query transaction status:" + statusResponse.getMessage());
-                return;
-            }
+            Asserts.check(response.success(), "Query status response");
 
             TransactionStatus data = statusResponse.getData();
-            if (com.opay.sdk.enums.TransactionStatus.PENDING.getValue().equals(data.getStatus()) || com.opay.sdk.enums.TransactionStatus.INITIAL.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.PENDING.getValue().equals(data.getStatus()) || TransactionStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction processing");
                 try {
                     Thread.sleep(5000);
@@ -61,50 +52,45 @@ public class BankAccountTransactionSamples {
                 }
                 continue;
             }
-            if (com.opay.sdk.enums.TransactionStatus.SUCCESS.getValue().equals(data.getStatus())) {
-                System.out.println("Successful transaction");
+            if (TransactionStatusEnum.SUCCESS.getValue().equals(data.getStatus())) {
+                System.out.println("Transaction Successful");
                 break;
             }
-            if (com.opay.sdk.enums.TransactionStatus.INPUT_PIN.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.FAILED.getValue().equals(data.getStatus())) {
+                System.out.println("Transaction Failed");
+                break;
+            }
+            if (TransactionStatusEnum.INPUT_PIN.getValue().equals(data.getStatus())) {
                 TransactionInputResponse inputResponse = verifyPIN(reference, "1105");
                 if (inputResponse.success()) {
-                    System.out.println("PIN verification successful");
-                    continue;
-                } else {
-                    System.out.println("PIN verification failed:" + inputResponse.getMessage());
-                    break;
+                    Asserts.check(inputResponse.success(), "PIN verification failed:");
                 }
+                System.out.println("PIN verification successful");
+                continue;
             }
-            if (com.opay.sdk.enums.TransactionStatus.INPUT_OTP.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.INPUT_OTP.getValue().equals(data.getStatus())) {
                 TransactionInputResponse inputResponse = verifyOTP(reference, "543210");
                 if (inputResponse.success()) {
-                    System.out.println("OTP verification successful");
-
-                    continue;
-                } else {
-                    System.out.println("OTP verification failed:" + inputResponse.getMessage());
-                    break;
+                    Asserts.check(inputResponse.success(), "OTP verification failed:");
                 }
+                System.out.println("OTP verification successful");
+                continue;
             }
-            if (com.opay.sdk.enums.TransactionStatus.INPUT_PHONE.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.INPUT_PHONE.getValue().equals(data.getStatus())) {
                 TransactionInputResponse inputResponse = verifyPhone(reference, "+2341234567890");
                 if (inputResponse.success()) {
-                    System.out.println("Phone verification successful");
-                    continue;
-                } else {
-                    System.out.println("Phone verification failed:" + inputResponse.getMessage());
-                    break;
+                    Asserts.check(inputResponse.success(), "Phone verification failed:");
                 }
+                System.out.println("Phone verification successful");
+                continue;
             }
-            if (com.opay.sdk.enums.TransactionStatus.INPUT_DOB.getValue().equals(data.getStatus())) {
+            if (TransactionStatusEnum.INPUT_DOB.getValue().equals(data.getStatus())) {
                 TransactionInputResponse inputResponse = verifyDOB(reference, "11/11/11");
                 if (inputResponse.success()) {
-                    System.out.println("DOB verification successful");
-                    continue;
-                } else {
-                    System.out.println("DOB verification failed:" + inputResponse.getMessage());
-                    break;
+                    Asserts.check(inputResponse.success(), "DOB verification failed:");
                 }
+                System.out.println("DOB verification successful");
+                continue;
             }
         }
 
@@ -132,7 +118,8 @@ public class BankAccountTransactionSamples {
         request.setDobDay("20");
         request.setDobMonth("05");
         request.setDobYear("2021");
-        System.out.println(JSONObject.toJSONString(request));
+        request.setCallbackUrl("http://wwww.xxx.com/opay/callback");
+        System.out.println(request);
         TransactionResponse response = null;
         try {
             response = client.createBankAccountTransaction(request);
@@ -150,6 +137,7 @@ public class BankAccountTransactionSamples {
     public static TransactionStatusResponse queryStatus(String reference) {
         TransactionStatusRequest request = new TransactionStatusRequest();
         request.setReference(reference);
+        System.out.println(request);
         TransactionStatusResponse response = null;
         try {
             response = client.queryTransactionStatus(request);
@@ -168,6 +156,7 @@ public class BankAccountTransactionSamples {
         TransactionInputPINRequest request = new TransactionInputPINRequest();
         request.setReference(reference);
         request.setPin(pin);
+        System.out.println(request);
         TransactionInputResponse response = null;
         try {
             response = client.verifyTransactionPIN(request);
@@ -186,6 +175,7 @@ public class BankAccountTransactionSamples {
         TransactionInputOTPRequest request = new TransactionInputOTPRequest();
         request.setReference(reference);
         request.setOtp(otp);
+        System.out.println(request);
         TransactionInputResponse response = null;
         try {
             response = client.verifyTransactionOTP(request);
@@ -204,6 +194,7 @@ public class BankAccountTransactionSamples {
         TransactionInputPhoneRequest request = new TransactionInputPhoneRequest();
         request.setReference(reference);
         request.setPhone(phone);
+        System.out.println(request);
         TransactionInputResponse response = null;
         try {
             response = client.verifyTransactionPhone(request);
@@ -222,6 +213,7 @@ public class BankAccountTransactionSamples {
         TransactionInputDOBRequest request = new TransactionInputDOBRequest();
         request.setReference(reference);
         request.setDob(dob);
+        System.out.println(request);
         TransactionInputResponse response = null;
         try {
             response = client.verifyTransactionDOB(request);
@@ -231,23 +223,4 @@ public class BankAccountTransactionSamples {
         return response;
     }
 
-
-    /**
-     * The second step is to query the transfer order status
-     *
-     * @param reference Merchant transaction number
-     * @return
-     */
-    public static TransferStatusResponse step2(String reference) {
-        TransferStatusRequest request = new TransferStatusRequest();
-        System.out.println(reference);
-        request.setReference(reference);
-        TransferStatusResponse response = null;
-        try {
-            response = client.queryTransferToBanktatus(request);
-        } catch (OPayException e) {
-            e.printStackTrace();
-        }
-        return response;
-    }
 }

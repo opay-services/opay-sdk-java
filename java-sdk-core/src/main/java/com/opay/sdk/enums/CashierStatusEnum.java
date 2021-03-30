@@ -3,16 +3,16 @@ package com.opay.sdk.enums;
 import lombok.Getter;
 
 @Getter
-public enum Status {
+public enum CashierStatusEnum {
     INITIAL("INITIAL"),
     PENDING("PENDING"),
-    SUCCESSFUL("SUCCESSFUL"),
-    FAILED("FAILED"),
-    CLOSED("CLOSED");
+    SUCCESS("SUCCESS"),
+    FAIL("FAIL"),
+    CLOSE("CLOSE");
 
     private String value;
 
-    Status(String value) {
+    CashierStatusEnum(String value) {
         this.value = value;
     }
 }

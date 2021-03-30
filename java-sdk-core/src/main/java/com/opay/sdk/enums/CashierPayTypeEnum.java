@@ -1,6 +1,6 @@
 package com.opay.sdk.enums;
 
-public enum CashierPayType {
+public enum CashierPayTypeEnum {
     BalancePayment,
     BonusPayment,
     OWealth,

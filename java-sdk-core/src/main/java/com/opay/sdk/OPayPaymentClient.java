@@ -38,10 +38,8 @@ public class OPayPaymentClient {
 
 
     /**
-     * Call the cashier/initialize endpoint to generate the OPay’s unique one-time checkout URL.
-     * This endpoint expects one product/order to be passed in the request for checkout page.
-     * Where more than one product needs checking out, combine the products into one order before
-     * calling the cashier/initialize endpoint.
+     * This method is to initiate a payment transaction and respond to an H5 payment page.
+     * The user can choose different payment methods to pay on the H5 page.
      *
      * @param request
      * @return
@@ -64,7 +62,7 @@ public class OPayPaymentClient {
     }
 
     /**
-     * Query transaction status(Status contains INITIAL, PENDING, SUCCESS, FAIL, CLOSE)
+     * Query transaction status(TransferStatusEnum contains INITIAL, PENDING, SUCCESS, FAIL, CLOSE)
      *
      * @param request
      * @return
@@ -128,6 +126,9 @@ public class OPayPaymentClient {
             headers.putAll(this.headers);
             headers.put(AUTHORIZATION_HEADER, "Bearer " + signature(request));
             response = UnirestUtils.post(url, request, headers, CashierRefundResponse.class);
+            if (response.success()) {
+                response.getData().setReference(request.getReference());
+            }
         } catch (UnirestException e) {
             throw new OPayException(e);
         }
@@ -198,7 +199,7 @@ public class OPayPaymentClient {
     }
 
     /**
-     * Query Wallet Transfer Status
+     * Query Wallet Transfer TransferStatusEnum
      *
      * @param request
      * @return
@@ -221,7 +222,7 @@ public class OPayPaymentClient {
     }
 
     /**
-     * Query Bank Account Transfer Status
+     * Query Bank Account Transfer TransferStatusEnum
      *
      * @param request
      * @return
@@ -540,7 +541,7 @@ public class OPayPaymentClient {
             String url = BASE_URL + Endpoints.OPAY_BETTING_PROVIDERS;
             Map<String, String> headers = new HashMap<>();
             headers.putAll(this.headers);
-            //headers.put(AUTHORIZATION_HEADER, "Bearer " + profile.getPublicKey());
+            headers.put(AUTHORIZATION_HEADER, "Bearer " + profile.getPublicKey());
             response = UnirestUtils.post(url, null, headers, BettingProviderResponse.class);
         } catch (UnirestException e) {
             throw new OPayException(e);
@@ -694,7 +695,7 @@ public class OPayPaymentClient {
             Map<String, String> headers = new HashMap<>();
             headers.putAll(this.headers);
             headers.put(AUTHORIZATION_HEADER, "Bearer " + profile.getPublicKey());
-            response = UnirestUtils.post(url, null, headers, BankResponse.class);
+            response = UnirestUtils.post(url, request, headers, BankResponse.class);
         } catch (UnirestException e) {
             throw new OPayException(e);
         }

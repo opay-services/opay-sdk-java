@@ -4,7 +4,7 @@ import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
-import com.opay.sdk.enums.TopupStatus;
+import com.opay.sdk.enums.TopupStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.BettingTopup;
 import com.opay.sdk.model.Bulk;
@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This sample is a betting account recharge.
+ * step 1: initiate a recharge transaction.
+ * step 2: check the status to confirm the final result.
+ */
 public class BettingTopupSamples {
 
     private static DefaultProfile profile = DefaultProfile.getProfile(Environment.SANDBOX, Config.MERCHANT_ID, Config.PUBLIC_KEY, Config.PRIVATE_KEY);
@@ -31,14 +36,12 @@ public class BettingTopupSamples {
             System.out.println("Failed to initialize transaction");
             return;
         }
-        System.out.println("Initialize transaction response:" + response);
+        System.out.println(response);
         if (!response.success()) {
             System.out.println("Failed to initialize transaction:" + response.getMessage());
             return;
         }
         System.out.println("Successful to initialize transaction");
-
-
         List<String> references = response.getData().stream()
                 .map(BettingTopup::getReference)
                 .collect(Collectors.toList());
@@ -47,23 +50,21 @@ public class BettingTopupSamples {
         for (String reference : references) {
             while (true) {
                 BettingTopupStatusResponse statusResponse = samples.queryStatus(reference);
-                System.out.println("Query transaction status response:" + response);
-
                 System.out.println(statusResponse);
                 if (statusResponse == null) {
-                    System.out.println("Failed to query transaction status");
+                    System.out.println("Failed to query status");
                     break;
                 }
                 if (!statusResponse.success()) {
-                    System.out.println("Failed to query transaction status:" + response.getMessage());
+                    System.out.println("Failed to query status:" + response.getMessage());
                     break;
                 }
                 BettingTopup data = statusResponse.getData().get(0);
-                if (TopupStatus.SUCCESS.getValue().equals(data.getStatus())) {
+                if (TopupStatusEnum.SUCCESS.getValue().equals(data.getStatus())) {
                     System.out.println("Successful transaction");
                     break;
                 }
-                if (TopupStatus.PENDING.getValue().equals(data.getStatus()) || TopupStatus.INITIAL.getValue().equals(data.getStatus())) {
+                if (TopupStatusEnum.PENDING.getValue().equals(data.getStatus()) || TopupStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                     System.out.println("Transaction processing");
                     try {
                         Thread.sleep(5000);
@@ -72,8 +73,8 @@ public class BettingTopupSamples {
                     }
                     continue;
                 }
-                if (TopupStatus.FAIL.getValue().equals(data.getStatus())) {
-                    System.out.println("Transaction Failed:"+data.getErrorMsg());
+                if (TopupStatusEnum.FAIL.getValue().equals(data.getStatus())) {
+                    System.out.println("Transaction Failed:" + data.getErrorMsg());
                     break;
                 }
             }
@@ -99,21 +100,25 @@ public class BettingTopupSamples {
         data.setProvider("NAIRABET");
         datas.add(data);
         request.setBulkData(datas);
-        System.out.println("Initialize transaction request:" + request);
+        System.out.println(request);
         BettingTopupResponse response = null;
         try {
             response = client.createBettingTopupTranaction(request);
+            System.out.println(response);
+            if (!response.success()) {
+                throw new OPayException(response.getMessage());
+            }
         } catch (OPayException e) {
             e.printStackTrace();
         }
-        if (response.success()) {
-            return response;
-        } else {
-            System.out.println(String.format("code:%s, message:%s", response.getCode(), response.getMessage()));
-        }
-        return null;
+        return response;
     }
 
+    /**
+     * Query airtime recharge transaction status.
+     * @param references
+     * @return
+     */
     public BettingTopupStatusResponse queryStatus(String references) {
         BettingStatusRequest request = new BettingStatusRequest();
         List<BulkStatus> datas = new ArrayList();
@@ -121,7 +126,7 @@ public class BettingTopupSamples {
         data.setReference(references);
         datas.add(data);
         request.setBulkStatusRequest(datas);
-        System.out.println("Query transaction status request:" + request);
+        System.out.println(request);
 
         BettingTopupStatusResponse response = null;
         try {

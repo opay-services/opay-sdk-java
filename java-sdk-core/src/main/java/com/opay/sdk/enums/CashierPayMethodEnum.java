@@ -1,6 +1,6 @@
 package com.opay.sdk.enums;
 
-public enum CashierPayMethod {
+public enum CashierPayMethodEnum {
     account,
     qrcode,
     bankCard,

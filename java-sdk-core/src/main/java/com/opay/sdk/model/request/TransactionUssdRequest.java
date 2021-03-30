@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class TransactionUssdRequest {
+
     private String reference;
     private String productDesc;
     private String userPhone;
@@ -11,7 +12,7 @@ public class TransactionUssdRequest {
     private String amount;
     private String currency;
     private String callbackUrl;
-    private Integer expireAt;
+    private String expireAt;
     private String bankCode;
 
 }

@@ -5,7 +5,7 @@ import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
 import com.opay.sdk.enums.ReceiverAccountTypeEnum;
-import com.opay.sdk.enums.Status;
+import com.opay.sdk.enums.TransferStatusEnum;
 import com.opay.sdk.exception.OPayException;
 import com.opay.sdk.model.TransferStatus;
 import com.opay.sdk.model.WalletReceiver;
@@ -13,9 +13,12 @@ import com.opay.sdk.model.request.TransferStatusRequest;
 import com.opay.sdk.model.request.TransferToWalletRequest;
 import com.opay.sdk.model.response.TransferResponse;
 import com.opay.sdk.model.response.TransferStatusResponse;
+import org.apache.http.util.Asserts;
 
 /**
- * Sample of transfer to OPay User Account
+ * This sample is to transfer money to a OPay user account
+ * Step 1: Initialize the transaction
+ * Step 2: Use reference to query the final status of the transaction
  */
 public class TransferToOPayUserAccountSamples {
 
@@ -24,61 +27,49 @@ public class TransferToOPayUserAccountSamples {
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
-
-        //The first step is to initiate a transfer transaction
-        TransferResponse response = step1();
-        if (response == null) {
+        TransferToOPayUserAccountSamples samples = new TransferToOPayUserAccountSamples();
+        TransferResponse response = samples.init();
+        Asserts.notNull(response, "response");
+        System.out.println(response);
+        if (!response.success()) {
             System.out.println("Failed to initialize transfer transaction");
             return;
         }
-        System.out.println("Initialize transfer transaction response body:" + response);
-        if (!response.success()) {
-            System.out.println("Failed to initialize transfer transaction:" + response.getMessage());
-            return;
-        }
-        System.out.println("Successfully initialized the transfer transaction");
         while (true) {
-            TransferStatusResponse statusResponse = step2(response.getData().getReference());
-            if (statusResponse == null) {
+            TransferStatusResponse statusResponse = samples.queryStatus(response.getData().getReference());
+            Asserts.notNull(response, "response");
+            System.out.println(statusResponse);
+            if (!statusResponse.success()) {
                 System.out.println("Failed to query transaction status");
                 return;
             }
-            System.out.println("Query status response body:" + statusResponse);
-
-            if (!statusResponse.success()) {
-                System.out.println("Failed to query transaction status:" + statusResponse.getMessage());
-                return;
-            }
             TransferStatus data = statusResponse.getData();
-            if (Status.SUCCESSFUL.getValue().equals(data.getStatus())) {
-                System.out.println("Successful transaction");
+            if (TransferStatusEnum.SUCCESSFUL.getValue().equals(data.getStatus())) {
+                System.out.println("Transaction Successful");
                 break;
-            } else if (Status.PENDING.getValue().equals(data.getStatus()) || Status.INITIAL.getValue().equals(data.getStatus())) {
+            } else if (TransferStatusEnum.PENDING.getValue().equals(data.getStatus()) || TransferStatusEnum.INITIAL.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction processing");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else if (Status.CLOSED.getValue().equals(data.getStatus())) {
+                continue;
+            } else if (TransferStatusEnum.CLOSED.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction closed");
                 break;
-            } else if (Status.FAILED.getValue().equals(data.getStatus())) {
+            } else if (TransferStatusEnum.FAILED.getValue().equals(data.getStatus())) {
                 System.out.println("Transaction failed");
                 break;
             } else {
+                System.out.println("Unknown status");
                 break;
             }
         }
 
     }
 
-    /**
-     * The first step is to initiate a transfer transaction
-     *
-     * @return
-     */
-    public static TransferResponse step1() {
+    public static TransferResponse init() {
         TransferToWalletRequest request = new TransferToWalletRequest();
         request.setReference(System.currentTimeMillis() + "");
         request.setAmount("100");
@@ -98,13 +89,7 @@ public class TransferToOPayUserAccountSamples {
         return response;
     }
 
-    /**
-     * The second step is to query the transfer order status
-     *
-     * @param reference Merchant transaction number
-     * @return
-     */
-    public static TransferStatusResponse step2(String reference) {
+    public static TransferStatusResponse queryStatus(String reference) {
         TransferStatusRequest request = new TransferStatusRequest();
         request.setReference(reference);
         TransferStatusResponse response = null;
