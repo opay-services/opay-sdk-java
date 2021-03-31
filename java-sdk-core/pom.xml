@@ -11,18 +11,16 @@
     <packaging>jar</packaging>
     <version>1.0.0</version>
     <artifactId>java-sdk-core</artifactId>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <name>${project.artifactId}</name>
+    <description>The core module of OPay sdk project</description>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
 
     <dependencies>
@@ -55,6 +53,12 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.60</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-common</artifactId>
+            <version>2.7.9</version>
         </dependency>
 
     </dependencies>

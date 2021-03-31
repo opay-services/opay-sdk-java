@@ -8,9 +8,33 @@
     <artifactId>opay-java-sdk</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+
+    <name>${project.artifactId}</name>
+    <description>The parent project of dubbo</description>
+    <url>https://github.com/opay-services/opay-sdk-java</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <modules>
         <module>java-sdk-core</module>
         <module>java-sdk-samples</module>
     </modules>
+
+    <scm>
+        <connection>scm:git@github.com:opay-services/opay-sdk-java.git</connection>
+        <developerConnection>scm:git@github.com:opay-services/opay-sdk-java.git</developerConnection>
+        <url>https://github.com/opay-services/opay-sdk-java</url>
+    </scm>
 
 </project>
