@@ -36,7 +36,7 @@ public class TransferToOPayMerchantAccountSamples {
             return;
         }
         while (true) {
-            TransferStatusResponse statusResponse = samples.queryStatus(response.getData().getReference());
+            TransferStatusResponse statusResponse = queryStatus(response.getData().getReference());
             Asserts.notNull(response, "response");
             System.out.println(statusResponse);
             if (!statusResponse.success()) {
@@ -69,6 +69,19 @@ public class TransferToOPayMerchantAccountSamples {
 
     }
 
+    public static TransferStatusResponse queryStatus(String reference) {
+        TransferStatusRequest request = new TransferStatusRequest();
+        request.setReference(reference);
+        System.out.println(request);
+        TransferStatusResponse response = null;
+        try {
+            response = client.queryTransferToWalletStatus(request);
+        } catch (OPayException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     public TransferResponse init() {
         TransferToWalletRequest request = new TransferToWalletRequest();
         request.setReference(System.currentTimeMillis() + "");
@@ -84,19 +97,6 @@ public class TransferToOPayMerchantAccountSamples {
         TransferResponse response = null;
         try {
             response = client.transferToWallet(request);
-        } catch (OPayException e) {
-            e.printStackTrace();
-        }
-        return response;
-    }
-
-    public static TransferStatusResponse queryStatus(String reference) {
-        TransferStatusRequest request = new TransferStatusRequest();
-        request.setReference(reference);
-        System.out.println(request);
-        TransferStatusResponse response = null;
-        try {
-            response = client.queryTransferToWalletStatus(request);
         } catch (OPayException e) {
             e.printStackTrace();
         }

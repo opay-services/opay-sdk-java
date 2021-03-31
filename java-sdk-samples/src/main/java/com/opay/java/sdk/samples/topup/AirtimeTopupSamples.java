@@ -1,4 +1,4 @@
-package com.opay.java.sdk.samples.airtime;
+package com.opay.java.sdk.samples.topup;
 
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;

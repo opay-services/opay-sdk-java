@@ -1,4 +1,4 @@
-package com.opay.java.sdk.samples.betting;
+package com.opay.java.sdk.samples.topup;
 
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
@@ -116,6 +116,7 @@ public class BettingTopupSamples {
 
     /**
      * Query airtime recharge transaction status.
+     *
      * @param references
      * @return
      */

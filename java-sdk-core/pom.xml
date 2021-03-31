@@ -49,6 +49,14 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.73</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.60</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

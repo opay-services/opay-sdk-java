@@ -1,26 +1,26 @@
-package com.opay.java.sdk.samples.betting;
+package com.opay.java.sdk.samples.topup;
 
 import com.opay.java.sdk.samples.Config;
 import com.opay.sdk.OPayPaymentClient;
 import com.opay.sdk.common.DefaultProfile;
 import com.opay.sdk.enums.Environment;
 import com.opay.sdk.exception.OPayException;
-import com.opay.sdk.model.request.BettingAccountRequest;
-import com.opay.sdk.model.response.BettingAccountResponse;
+import com.opay.sdk.model.response.BettingProviderResponse;
 import org.apache.http.util.Asserts;
 
+
 /**
- * This sample is for querying betting account information
+ * This sample is to get a list of betting providers.
  */
-public class BettingAccountQuerySamples {
+public class BettingProviderQuerySamples {
 
     private static DefaultProfile profile = DefaultProfile.getProfile(Environment.SANDBOX, Config.MERCHANT_ID, Config.PUBLIC_KEY, Config.PRIVATE_KEY);
 
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
-        BettingAccountQuerySamples samples = new BettingAccountQuerySamples();
-        BettingAccountResponse response = samples.query();
+        BettingProviderQuerySamples samples = new BettingProviderQuerySamples();
+        BettingProviderResponse response = samples.query();
         Asserts.notNull(response, "response");
         System.out.println(response);
         if (response.success()) {
@@ -30,14 +30,11 @@ public class BettingAccountQuerySamples {
         }
     }
 
-    public BettingAccountResponse query() {
-        BettingAccountRequest request = new BettingAccountRequest();
-        request.setProvider("CLOUDBET");
-        request.setCustomerId("123456789");
-        System.out.println(request);
-        BettingAccountResponse response = null;
+
+    public BettingProviderResponse query() {
+        BettingProviderResponse response = null;
         try {
-            response = client.validateBettingCustomerId(request);
+            response = client.queryBettingProviders();
         } catch (OPayException e) {
             e.printStackTrace();
         }

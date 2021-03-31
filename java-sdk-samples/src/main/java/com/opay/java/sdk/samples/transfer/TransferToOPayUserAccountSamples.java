@@ -28,7 +28,7 @@ public class TransferToOPayUserAccountSamples {
 
     public static void main(String[] args) {
         TransferToOPayUserAccountSamples samples = new TransferToOPayUserAccountSamples();
-        TransferResponse response = samples.init();
+        TransferResponse response = init();
         Asserts.notNull(response, "response");
         System.out.println(response);
         if (!response.success()) {
@@ -36,7 +36,7 @@ public class TransferToOPayUserAccountSamples {
             return;
         }
         while (true) {
-            TransferStatusResponse statusResponse = samples.queryStatus(response.getData().getReference());
+            TransferStatusResponse statusResponse = queryStatus(response.getData().getReference());
             Asserts.notNull(response, "response");
             System.out.println(statusResponse);
             if (!statusResponse.success()) {

@@ -18,14 +18,14 @@ import org.apache.http.util.Asserts;
  * Step 1: Initialize the transaction
  * Step 2: After the customer dials, call the reference to query the final status of the transaction
  */
-public class UssdSamples {
+public class UssdTransactionSamples {
 
     private static DefaultProfile profile = DefaultProfile.getProfile(Environment.SANDBOX, Config.MERCHANT_ID, Config.PUBLIC_KEY, Config.PRIVATE_KEY);
 
     private static OPayPaymentClient client = new OPayPaymentClient(profile);
 
     public static void main(String[] args) {
-        UssdSamples samples = new UssdSamples();
+        UssdTransactionSamples samples = new UssdTransactionSamples();
 
         TransactionUssdResponse response = samples.init();
         Asserts.notNull(response, "response");
