@@ -23,7 +23,7 @@ public class CallbackVerifySignSamples {
         payload.setTimestamp("2021-03-30T08:48:58Z");
         payload.setSignature("2d67f294357caeda84636ba68e2b74723924b9ec1c626bb732e56ca9633b0dffd2963e82cae34940fba1147306fcef8223d69bd0419fe02025ecae5933f4d96a0");
         try {
-            boolean result = SignatureUtils.verifyTransactionSignature(payload, , Config.PRIVATE_KEY);
+            boolean result = SignatureUtils.verifyTransactionSignature(payload, Config.PRIVATE_KEY);
             if (result) {
                 System.out.println("Verified successfully");
             }

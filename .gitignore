@@ -7,4 +7,5 @@
 *.iml
 **/*.iml
 **/target
+README.md
 
