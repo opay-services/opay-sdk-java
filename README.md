@@ -75,13 +75,21 @@ The following code example shows the three main steps to use OPay SDK for Java :
 3. Initiate the request and handle the response or exceptions.
 
 ```java
-package com.testprogram;
-import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.IAcsClient;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.exceptions.ServerException;
-import com.aliyuncs.ecs.model.v20140526.*;
+package com.opay.java.sdk.samples.cashier;
+import com.opay.java.sdk.samples.Config;
+import com.opay.sdk.OPayPaymentClient;
+import com.opay.sdk.common.DefaultProfile;
+import com.opay.sdk.enums.CashierPayMethodEnum;
+import com.opay.sdk.enums.CashierPayTypeEnum;
+import com.opay.sdk.enums.Environment;
+import com.opay.sdk.exception.OPayException;
+import com.opay.sdk.model.request.CashierInitializeRequest;
+import com.opay.sdk.model.response.CashierInitializeResponse;
+import org.apache.http.util.Asserts;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
        
@@ -124,8 +132,10 @@ public class Main {
     
         
 }
-```
 
+
+```
+Click [here](./java-sdk-samples/src/main/java/com/opay/java/sdk/samples) for more samples.
 
 
 ## Issues
@@ -134,15 +144,7 @@ public class Main {
 ## Changelog
 Detailed changes for each release are documented in the [release notes](./java-sdk-core/ChangeLog.txt).
 
-## Contribution
-Please make sure to read the [Contributing Guide](CONTRIBUTING.md) before making a pull request.
-
 ## References
-* [Alibaba Cloud Regions & Endpoints](https://developer.aliyun.com/endpoints)
-* [Alibab Cloud OpenAPI Portal](https://next.api.aliyun.com/)
-* [Latest Release](https://github.com/aliyun/aliyun-openapi-java-sdk)
-
-## License
-[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Copyright (c) 2009-present, Alibaba Cloud All rights reserved.
+* [Documentation](https://documentation.opayweb.com/)
+* [API](https://doc.opayweb.com/home/api/docbox_content_introduction.html#introduction)
+* [Latest Release](https://github.com/opay-services/opay-sdk-java)
