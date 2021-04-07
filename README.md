@@ -1,1 +1,1 @@
-# opay-sdk-java
+# OPay sdk for java
