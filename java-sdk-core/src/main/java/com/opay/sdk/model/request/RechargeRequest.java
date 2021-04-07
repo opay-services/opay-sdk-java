@@ -13,6 +13,5 @@ public class RechargeRequest {
     private String expireAt;
     private String countryCode;
     private String chargerType;
-    //商户或用户ID
     private String chargerId;
 }

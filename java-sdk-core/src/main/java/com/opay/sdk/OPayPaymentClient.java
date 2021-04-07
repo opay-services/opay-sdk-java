@@ -743,12 +743,9 @@ public class OPayPaymentClient {
         return response;
     }
 
-
     private String signature(Object object) {
         String data = JSONObject.toJSONString(object);
-        //System.out.println("加密前：" + data);
         String signature = HMACSHA512Util.hmacSHA512(data, this.profile.getPrivateKey());
-        //System.out.println("签名：" + signature);
         return signature;
     }
 }

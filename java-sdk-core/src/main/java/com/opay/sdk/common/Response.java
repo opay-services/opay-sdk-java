@@ -9,7 +9,6 @@ public class Response {
 
     private String message;
 
-
     public boolean success() {
         return "00000".equals(this.code);
     }

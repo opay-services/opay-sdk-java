@@ -21,10 +21,8 @@ public class HMACSHA512Util {
             byte[] hex = new Hex().encode(macData);
             result = new String(hex, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException e) {
-            // TODO 自动生成的 catch 块
             e.printStackTrace();
         } catch (InvalidKeyException e) {
-            // TODO 自动生成的 catch 块
             e.printStackTrace();
         }
         return result;

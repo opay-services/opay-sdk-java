@@ -24,5 +24,4 @@ public class CashierInitializeRequest {
     private String expireAt;
     private String serviceId;
     private String merchantUserId;
-    private String bankCode;
 }

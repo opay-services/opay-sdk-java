@@ -55,6 +55,9 @@ public class CashierInitializeSamples {
         payMethods.add(CashierPayMethodEnum.account);
         payMethods.add(CashierPayMethodEnum.qrcode);
         payMethods.add(CashierPayMethodEnum.bankCard);
+        payMethods.add(CashierPayMethodEnum.bankAccount);
+        payMethods.add(CashierPayMethodEnum.bankTransfer);
+        payMethods.add(CashierPayMethodEnum.bankUSSD);
         request.setPayMethods(payMethods);
         request.setCallbackUrl("http://www.baidu.com");
         request.setReturnUrl("http://www.baidu.com");

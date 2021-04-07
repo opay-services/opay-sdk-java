@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class CashierCloseRequest {
-    //private String orderNo;
+
     private String reference;
 }

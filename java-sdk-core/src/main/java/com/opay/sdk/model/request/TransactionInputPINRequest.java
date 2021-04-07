@@ -6,7 +6,6 @@ import lombok.Data;
 public class TransactionInputPINRequest {
 
     private String reference;
-    private String orderNo;
     private String pin;
 
 }
