@@ -109,24 +109,27 @@ public class BankCardTransactionSamples {
         request.setReference(System.currentTimeMillis() + "");
         request.setAmount("100");
         request.setCountry("NG");
-        request.setCurrency("NGN");
+        request.setCurrency("USD");
         request.setPayType(PayTypeEnum.bankcard);
         request.setFirstName("wanjun");
         request.setLastName("an");
+        request.setCustomerPhone("+234xxxxx");
         request.setCustomerEmail("anwj@163.com");
         request.setCardDateMonth("12");
         request.setCardDateYear("22");
         request.setCardCVC("561");
-        request.setReturn3dsUrl("http://www.baidu.com");
+        request.setReturn3dsUrl("https://39f0e4794ded.ngrok.io/dscallback");
         request.setCardNumber("5061460410121111105");
         request.setBankCode("033");
         request.setReason("xxxxxxx");
         request.setExpireAt("20");
-        request.setBillingZip("");
-        request.setBillingCity("");
-        request.setBillingAddress("");
-        request.setBillingState("");
-        request.setBillingCountry("");
+        if (request.getCurrency().equals("USD")) {
+            request.setBillingZip("0101");
+            request.setBillingCity("121");
+            request.setBillingAddress("1111");
+            request.setBillingState("11");
+            request.setBillingCountry("NG");
+        }
         System.out.println(JSONObject.toJSONString(request));
         TransactionResponse response = null;
         try {

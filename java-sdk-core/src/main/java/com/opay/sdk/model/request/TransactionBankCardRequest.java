@@ -13,6 +13,7 @@ public class TransactionBankCardRequest {
     private PayTypeEnum payType = PayTypeEnum.bankcard;
     private String firstName;
     private String lastName;
+    private String customerPhone;
     private String customerEmail;
     private String cardNumber;
     private String cardDateMonth;
